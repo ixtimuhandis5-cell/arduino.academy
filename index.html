@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arduino Academy</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial, sans-serif;
+  background:#0b1120;
+  color:#e5e7eb;
+}
+
+header{
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  padding:25px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:bold;
+}
+
+.progressBox{
+  width:220px;
+}
+
+.progressText{
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.progress{
+  width:100%;
+  height:8px;
+  background:#ffffff33;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.progressBar{
+  height:100%;
+  width:0%;
+  background:#fff;
+}
+
+.layout{
+  display:flex;
+  min-height:calc(100vh - 80px);
+}
+
+.sidebar{
+  width:300px;
+  background:#111827;
+  border-right:1px solid #263244;
+  padding:20px;
+  overflow-y:auto;
+}
+
+.sidebar h2{
+  margin-bottom:15px;
+}
+
+.sectionTitle{
+  color:#60a5fa;
+  margin:20px 0 10px;
+  font-size:14px;
+}
+
+.lessonBtn{
+  width:100%;
+  padding:12px;
+  margin-bottom:7px;
+  border:none;
+  border-radius:9px;
+  background:#1f2937;
+  color:#d1d5db;
+  text-align:left;
+  cursor:pointer;
+}
+
+.lessonBtn:hover{
+  background:#263449;
+}
+
+.lessonBtn.active{
+  background:#2563eb;
+  color:white;
+}
+
+.lessonBtn.done::after{
+  content:" ✓";
+  color:#4ade80;
+}
+
+main{
+  flex:1;
+  padding:30px;
+  max-width:1200px;
+  margin:auto;
+  width:100%;
+}
+
+.lessonHeader{
+  margin-bottom:25px;
+}
+
+.lessonHeader h1{
+  font-size:32px;
+  margin-bottom:8px;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 10px;
+  background:#1e40af;
+  border-radius:20px;
+  font-size:12px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.card{
+  background:#111827;
+  border:1px solid #263244;
+  border-radius:16px;
+  padding:22px;
+}
+
+.card h2{
+  margin-bottom:15px;
+  color:#60a5fa;
+}
+
+.card p{
+  line-height:1.7;
+  color:#cbd5e1;
+}
+
+.code{
+  background:#020617;
+  padding:18px;
+  border-radius:10px;
+  overflow:auto;
+  color:#93c5fd;
+  font-family:Consolas,monospace;
+  line-height:1.6;
+  min-height:180px;
+}
+
+.copyBtn,
+.actionBtn{
+  border:none;
+  padding:11px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  color:white;
+  background:#2563eb;
+  margin-top:12px;
+}
+
+.copyBtn:hover,
+.actionBtn:hover{
+  background:#1d4ed8;
+}
+
+.model{
+  height:360px;
+  border-radius:12px;
+  overflow:hidden;
+  background:#020617;
+}
+
+#threeContainer{
+  width:100%;
+  height:100%;
+}
+
+.parts{
+  list-style:none;
+}
+
+.parts li{
+  padding:10px;
+  background:#1e293b;
+  margin-bottom:7px;
+  border-radius:8px;
+}
+
+.quiz{
+  margin-top:20px;
+}
+
+.question{
+  font-size:18px;
+  margin-bottom:15px;
+}
+
+.answer{
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:12px;
+  margin:7px 0;
+  background:#1e293b;
+  color:white;
+  border:1px solid #334155;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.answer:hover{
+  background:#334155;
+}
+
+.result{
+  margin-top:12px;
+  font-weight:bold;
+}
+
+.navigation{
+  display:flex;
+  justify-content:space-between;
+  margin-top:25px;
+}
+
+@media(max-width:900px){
+
+  .layout{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    width:100%;
+    max-height:300px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  header{
+    flex-direction:column;
+    gap:15px;
+  }
+
+  main{
+    padding:18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <div class="logo">
+    🔧 Arduino Academy
+  </div>
+
+  <div class="progressBox">
+    <div class="progressText">
+      O‘rganish jarayoni: <span id="progressText">0%</span>
+    </div>
+
+    <div class="progress">
+      <div class="progressBar" id="progressBar"></div>
+    </div>
+  </div>
+
+</header>
+
+
+<div class="layout">
+
+<aside class="sidebar">
+
+<h2>📚 Darslar</h2>
+
+<div class="sectionTitle">1-BO‘LIM</div>
+
+<div id="section1"></div>
+
+<div class="sectionTitle">2-BO‘LIM</div>
+
+<div id="section2"></div>
+
+</aside>
+
+
+<main>
+
+<div class="lessonHeader">
+
+<h1 id="title"></h1>
+
+<span class="badge" id="duration"></span>
+
+</div>
+
+
+<div class="grid">
+
+<!-- NAZARIYA -->
+
+<div class="card">
+
+<h2>📖 Nazariya</h2>
+
+<p id="theory"></p>
+
+</div>
+
+
+<!-- 3D MODEL -->
+
+<div class="card">
+
+<h2>🧊 3D model</h2>
+
+<div class="model">
+
+<div id="threeContainer"></div>
+
+</div>
+
+<p style="margin-top:10px;color:#94a3b8">
+Sichqoncha bilan modelni aylantiring.
+</p>
+
+</div>
+
+
+<!-- KOD -->
+
+<div class="card">
+
+<h2>💻 Arduino kodi</h2>
+
+<pre class="code"><code id="code"></code></pre>
+
+<button class="copyBtn" onclick="copyCode()">
+📋 Kodni nusxalash
+</button>
+
+</div>
+
+
+<!-- KOMPONENTLAR -->
+
+<div class="card">
+
+<h2>🔌 Kerakli komponentlar</h2>
+
+<ul class="parts" id="parts"></ul>
+
+</div>
+
+</div>
+
+
+<!-- QUIZ -->
+
+<div class="card quiz">
+
+<h2>📝 Mini test</h2>
+
+<div class="question" id="question"></div>
+
+<div id="answers"></div>
+
+<div class="result" id="result"></div>
+
+</div>
+
+
+<div class="navigation">
+
+<button class="actionBtn" onclick="previousLesson()">
+⬅ Oldingi dars
+</button>
+
+<button class="actionBtn" onclick="completeLesson()">
+✓ Darsni tugatish
+</button>
+
+<button class="actionBtn" onclick="nextLesson()">
+Keyingi dars ➡
+</button>
+
+</div>
+
+</main>
+
+</div>
+
+
+<!-- THREE.JS -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+
+const lessons = [
+
+{
+ section:1,
+ title:"Arduino to‘plamini olish haqida",
+ duration:"03:00",
+ theory:"Arduino — elektronika va dasturlashni o‘rganish uchun ishlatiladigan ochiq platforma. Arduino to‘plamida plata, sensorlar, LEDlar, rezistorlar va boshqa komponentlar bo‘lishi mumkin.",
+ code:"// Arduino bilan ishlashni boshlash\nvoid setup() {\n}\n\nvoid loop() {\n}",
+ parts:["Arduino plata","USB kabel","Breadboard","Jumper simlar"],
+ question:"Arduino nima uchun ishlatiladi?",
+ answers:["Elektronika va dasturlash loyihalari","Faqat musiqa tinglash","Faqat rasm chizish"],
+ correct:0,
+ model:"arduino"
+},
+
+{
+ section:1,
+ title:"Texnika xavfsizligi",
+ duration:"03:00",
+ theory:"Arduino bilan ishlaganda qisqa tutashuvga yo‘l qo‘ymaslik, komponentlarni to‘g‘ri ulash va plata kuchlanish talablariga rioya qilish kerak.",
+ code:"// Xavfsiz ishlash\n// Ulanishlarni tekshiring\n// Kuchlanishni nazorat qiling",
+ parts:["Arduino","Breadboard","Jumper simlar"],
+ question:"Arduino bilan ishlaganda eng muhim narsa nima?",
+ answers:["Ulanishlarni tekshirish","Simlarni tasodifiy ulash","Platani suvga solish"],
+ correct:0,
+ model:"board"
+},
+
+{
+ section:1,
+ title:"Arduino platasi turlari bilan tanishuv",
+ duration:"05:00",
+ theory:"Arduino oilasida turli platalar mavjud. Ularning pinlari, o‘lchamlari va imkoniyatlari bir-biridan farq qiladi.",
+ code:"// Oddiy Arduino dasturi\nvoid setup() {\n  Serial.begin(9600);\n}\n\nvoid loop() {\n}",
+ parts:["Arduino UNO","Arduino Nano","Arduino Mega"],
+ question:"Arduino UNO nima?",
+ answers:["Mikrokontroller platasi","Monitor","Sensor"],
+ correct:0,
+ model:"arduino"
+},
+
+{
+ section:1,
+ title:"Chiroqcha bilan ishlash",
+ duration:"09:00",
+ theory:"LEDni Arduino yordamida yoqish va o‘chirish uchun digitalWrite() funksiyasidan foydalanish mumkin.",
+ code:"int led = 13;\n\nvoid setup() {\n  pinMode(led, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(led, HIGH);\n  delay(1000);\n  digitalWrite(led, LOW);\n  delay(1000);\n}",
+ parts:["Arduino UNO","LED","220Ω rezistor","Jumper sim"],
+ question:"LEDni yoqish uchun qaysi qiymat ishlatiladi?",
+ answers:["HIGH","LOW","STOP"],
+ correct:0,
+ model:"led"
+},
+
+{
+ section:1,
+ title:"Matnli maʼlumot bilan ishlash",
+ duration:"09:00",
+ theory:"Arduino Serial Monitor orqali kompyuterga matn va ma’lumot yuborish mumkin.",
+ code:"void setup() {\n  Serial.begin(9600);\n}\n\nvoid loop() {\n  Serial.println(\"Salom Arduino!\");\n  delay(1000);\n}",
+ parts:["Arduino","USB kabel","Kompyuter"],
+ question:"Serial.begin(9600) nima qiladi?",
+ answers:["Serial aloqani boshlaydi","LEDni yoqadi","Motorni aylantiradi"],
+ correct:0,
+ model:"board"
+},
+
+{
+ section:1,
+ title:"Svetofor",
+ duration:"14:00",
+ theory:"Uchta LED yordamida qizil, sariq va yashil svetofor modelini yaratish mumkin.",
+ code:"int red = 8;\nint yellow = 9;\nint green = 10;\n\nvoid setup() {\n  pinMode(red, OUTPUT);\n  pinMode(yellow, OUTPUT);\n  pinMode(green, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(red, HIGH);\n  delay(2000);\n  digitalWrite(red, LOW);\n\n  digitalWrite(yellow, HIGH);\n  delay(1000);\n  digitalWrite(yellow, LOW);\n\n  digitalWrite(green, HIGH);\n  delay(2000);\n  digitalWrite(green, LOW);\n}",
+ parts:["Arduino UNO","Qizil LED","Sariq LED","Yashil LED","3×220Ω rezistor"],
+ question:"Svetoforda nechta asosiy rang ishlatiladi?",
+ answers:["3 ta","2 ta","5 ta"],
+ correct:0,
+ model:"traffic"
+},
+
+{
+ section:1,
+ title:"Segment",
+ duration:"10:00",
+ theory:"7-segment indikator raqamlarni ko‘rsatish uchun ishlatiladi. Uning bir nechta LED segmentlari mavjud.",
+ code:"int a=2;\nint b=3;\nint c=4;\nint d=5;\nint e=6;\nint f=7;\nint g=8;\n\nvoid setup(){\n  pinMode(a,OUTPUT);\n  pinMode(b,OUTPUT);\n  pinMode(c,OUTPUT);\n  pinMode(d,OUTPUT);\n  pinMode(e,OUTPUT);\n  pinMode(f,OUTPUT);\n  pinMode(g,OUTPUT);\n}",
+ parts:["Arduino","7-segment indikator","Rezistorlar"],
+ question:"7-segment nima uchun ishlatiladi?",
+ answers:["Raqamlarni ko‘rsatish","Ovoz yozish","Haroratni o‘lchash"],
+ correct:0,
+ model:"segment"
+},
+
+{
+ section:1,
+ title:"Segment. Amaliy ish",
+ duration:"04:00",
+ theory:"Bu amaliy ishda 7-segment indikator yordamida raqam chiqarish mashq qilinadi.",
+ code:"// 7-segment amaliy ish\n// Segmentlarni Arduino pinlariga ulang.",
+ parts:["Arduino","7-segment","Rezistorlar"],
+ question:"7-segmentda raqamlar qanday hosil qilinadi?",
+ answers:["Segmentlarni boshqarish orqali","Ovoz orqali","Motor orqali"],
+ correct:0,
+ model:"segment"
+},
+
+{
+ section:1,
+ title:"Integer",
+ duration:"08:00",
+ theory:"int toifasi butun sonlarni saqlash uchun ishlatiladi.",
+ code:"int son = 25;\n\nvoid setup(){\n  Serial.begin(9600);\n  Serial.println(son);\n}\n\nvoid loop(){}",
+ parts:["Arduino","USB kabel"],
+ question:"int qanday ma’lumot saqlaydi?",
+ answers:["Butun son","Faqat matn","Faqat rasm"],
+ correct:0,
+ model:"board"
+},
+
+{
+ section:1,
+ title:"Matematik amallar. Float toifasi",
+ duration:"11:00",
+ theory:"Float o‘nlik kasrli sonlar bilan ishlash imkonini beradi. Arduino dasturlarida matematik amallar bajarish mumkin.",
+ code:"float a = 5.5;\nfloat b = 2.0;\nfloat natija = a / b;\n\nvoid setup(){\n  Serial.begin(9600);\n  Serial.println(natija);\n}\n\nvoid loop(){}",
+ parts:["Arduino","USB kabel"],
+ question:"float nima uchun ishlatiladi?",
+ answers:["Kasrli sonlar","Faqat harflar","Faqat LED"],
+ correct:0,
+ model:"board"
+},
+
+{
+ section:1,
+ title:"If operatori",
+ duration:"08:00",
+ theory:"if operatori shartni tekshiradi. Shart rost bo‘lsa, uning ichidagi kod bajariladi.",
+ code:"int sensor = 5;\n\nvoid setup(){\n  pinMode(sensor, INPUT);\n  Serial.begin(9600);\n}\n\nvoid loop(){\n  if(digitalRead(sensor) == HIGH){\n    Serial.println(\"Signal!\");\n  }\n}",
+ parts:["Arduino","Sensor","Jumper sim"],
+ question:"if operatori nima qiladi?",
+ answers:["Shartni tekshiradi","Arduino'ni o‘chiradi","Kod yozadi"],
+ correct:0,
+ model:"board"
+},
+
+{
+ section:1,
+ title:"Water sensori. 1-qism",
+ duration:"09:00",
+ theory:"Water sensor suv mavjudligini yoki namlik darajasini aniqlash uchun ishlatiladi.",
+ code:"int water = A0;\n\nvoid setup(){\n  Serial.begin(9600);\n}\n\nvoid loop(){\n  int value = analogRead(water);\n  Serial.println(value);\n  delay(500);\n}",
+ parts:["Arduino","Water sensor","Jumper sim"],
+ question:"Water sensor nimani aniqlaydi?",
+ answers:["Suv yoki namlikni","Ovozni","Yorug‘likni"],
+ correct:0,
+ model:"sensor"
+},
+
+{
+ section:1,
+ title:"Water sensori. 2-qism",
+ duration:"08:00",
+ theory:"Sensor qiymatini if operatori bilan tekshirib, suv aniqlanganda LED yoki buzzer kabi qurilmani ishga tushirish mumkin.",
+ code:"int water=A0;\nint led=13;\n\nvoid setup(){\n  pinMode(led,OUTPUT);\n}\n\nvoid loop(){\n  int value=analogRead(water);\n\n  if(value > 500){\n    digitalWrite(led,HIGH);\n  }else{\n    digitalWrite(led,LOW);\n  }\n}",
+ parts:["Arduino","Water sensor","LED","Rezistor"],
+ question:"Sensor qiymati qaysi funksiya bilan o‘qiladi?",
+ answers:["analogRead()","digitalWrite()","delay()"],
+ correct:0,
+ model:"sensor"
+},
+
+{
+ section:1,
+ title:"Button",
+ duration:"12:00",
+ theory:"Button Arduino uchun raqamli kirish qurilmasi bo‘lib, bosilgan yoki bosilmagan holatni aniqlashga yordam beradi.",
+ code:"int button=2;\nint led=13;\n\nvoid setup(){\n  pinMode(button,INPUT_PULLUP);\n  pinMode(led,OUTPUT);\n}\n\nvoid loop(){\n  if(digitalRead(button)==LOW){\n    digitalWrite(led,HIGH);\n  }else{\n    digitalWrite(led,LOW);\n  }\n}",
+ parts:["Arduino","Button","LED","220Ω rezistor"],
+ question:"Button holatini qaysi funksiya o‘qiydi?",
+ answers:["digitalRead()","analogRead()","delay()"],
+ correct:0,
+ model:"button"
+},
+
+{
+ section:2,
+ title:"Zummer",
+ duration:"12:00",
+ theory:"Buzzer yoki zummer Arduino yordamida tovush chiqarish uchun ishlatiladi.",
+ code:"int buzzer=8;\n\nvoid setup(){}\n\nvoid loop(){\n  tone(buzzer,1000);\n  delay(500);\n  noTone(buzzer);\n  delay(500);\n}",
+ parts:["Arduino","Buzzer","Jumper sim"],
+ question:"tone() nima qiladi?",
+ answers:["Tovush signalini hosil qiladi","LEDni o‘chiradi","Sensorni o‘qiydi"],
+ correct:0,
+ model:"buzzer"
+},
+
+{
+ section:2,
+ title:"Pianino",
+ duration:"11:00",
+ theory:"Bir nechta button va buzzer yordamida oddiy elektron pianino yaratish mumkin.",
+ code:"int buzzer=8;\nint button=2;\n\nvoid setup(){\n  pinMode(button,INPUT_PULLUP);\n}\n\nvoid loop(){\n  if(digitalRead(button)==LOW){\n    tone(buzzer,523);\n  }else{\n    noTone(buzzer);\n  }\n}",
+ parts:["Arduino","Buzzer","Buttonlar"],
+ question:"Elektron pianino loyihasida asosiy tovush qurilmasi nima?",
+ answers:["Buzzer","LED","Fotorezistor"],
+ correct:0,
+ model:"piano"
+},
+
+{
+ section:2,
+ title:"LCD1602",
+ duration:"10:00",
+ theory:"LCD1602 displeyi Arduino'dan matn va raqamlarni ko‘rsatish uchun ishlatiladi.",
+ code:"#include <LiquidCrystal.h>\n\nLiquidCrystal lcd(12,11,5,4,3,2);\n\nvoid setup(){\n  lcd.begin(16,2);\n  lcd.print(\"Salom Arduino!\");\n}\n\nvoid loop(){}",
+ parts:["Arduino","LCD1602","Jumper sim"],
+ question:"LCD1602 nimani ko‘rsatishi mumkin?",
+ answers:["Matn va raqamlar","Faqat tovush","Faqat harorat"],
+ correct:0,
+ model:"lcd"
+},
+
+{
+ section:2,
+ title:"RGB",
+ duration:"14:00",
+ theory:"RGB LED qizil, yashil va ko‘k kanallarni aralashtirib turli ranglar hosil qilishi mumkin.",
+ code:"int R=9;\nint G=10;\nint B=11;\n\nvoid setup(){\n  pinMode(R,OUTPUT);\n  pinMode(G,OUTPUT);\n  pinMode(B,OUTPUT);\n}\n\nvoid loop(){\n  analogWrite(R,255);\n  analogWrite(G,0);\n  analogWrite(B,0);\n}",
+ parts:["Arduino","RGB LED","3×220Ω rezistor"],
+ question:"RGB qanday rang kanallaridan iborat?",
+ answers:["Red, Green, Blue","Red, Gray, Black","White, Yellow, Pink"],
+ correct:0,
+ model:"rgb"
+},
+
+{
+ section:2,
+ title:"Mantiqiy elementlar",
+ duration:"11:00",
+ theory:"AND, OR va NOT kabi mantiqiy amallar shartlarni birlashtirish va tekshirishda ishlatiladi.",
+ code:"bool A=true;\nbool B=false;\n\nvoid setup(){\n  Serial.begin(9600);\n  Serial.println(A && B);\n}\n\nvoid loop(){}",
+ parts:["Arduino","Kompyuter"],
+ question:"&& operatori qaysi mantiqiy amal?",
+ answers:["AND","OR","NOT"],
+ correct:0,
+ model:"board"
+},
+
+{
+ section:2,
+ title:"Fotorezistor",
+ duration:"09:00",
+ theory:"Fotorezistor yorug‘lik miqdoriga qarab qarshiligini o‘zgartiradigan sensor hisoblanadi.",
+ code:"int ldr=A0;\n\nvoid setup(){\n  Serial.begin(9600);\n}\n\nvoid loop(){\n  int value=analogRead(ldr);\n  Serial.println(value);\n  delay(300);\n}",
+ parts:["Arduino","LDR","10kΩ rezistor"],
+ question:"Fotorezistor nimaga sezgir?",
+ answers:["Yorug‘likka","Ovozga","Suvga"],
+ correct:0,
+ model:"ldr"
+},
+
+{
+ section:2,
+ title:"Infrared",
+ duration:"08:00",
+ theory:"Infrared sensor infraqizil signal yordamida obyektlarni aniqlash yoki masofani nazorat qilishda ishlatilishi mumkin.",
+ code:"int ir=2;\n\nvoid setup(){\n  pinMode(ir,INPUT);\n  Serial.begin(9600);\n}\n\nvoid loop(){\n  int value=digitalRead(ir);\n  Serial.println(value);\n  delay(200);\n}",
+ parts:["Arduino","Infrared sensor"],
+ question:"Infrared sensor qanday signal bilan ishlaydi?",
+ answers:["Infraqizil","Ultrabinafsha","Audio"],
+ correct:0,
+ model:"sensor"
+},
+
+{
+ section:2,
+ title:"For operatori",
+ duration:"17:00",
+ theory:"for operatori bir xil amalni bir necha marta takrorlash uchun ishlatiladi.",
+ code:"void setup(){\n  Serial.begin(9600);\n\n  for(int i=0;i<10;i++){\n    Serial.println(i);\n  }\n}\n\nvoid loop(){}",
+ parts:["Arduino","USB kabel"],
+ question:"for operatorining asosiy vazifasi nima?",
+ answers:["Takrorlash","Sensor o‘qish","Arduino'ni o‘chirish"],
+ correct:0,
+ model:"board"
+},
+
+{
+ section:2,
+ title:"Servo",
+ duration:"09:00",
+ theory:"Servo motor ma’lum burchakka burilish uchun ishlatiladi. Arduino orqali uning holatini boshqarish mumkin.",
+ code:"#include <Servo.h>\n\nServo motor;\n\nvoid setup(){\n  motor.attach(9);\n}\n\nvoid loop(){\n  motor.write(0);\n  delay(1000);\n\n  motor.write(90);\n  delay(1000);\n\n  motor.write(180);\n  delay(1000);\n}",
+ parts:["Arduino","Servo motor","Jumper sim"],
+ question:"Servo motor nima bilan boshqariladi?",
+ answers:["Burchak qiymati bilan","Faqat tovush bilan","Faqat yorug‘lik bilan"],
+ correct:0,
+ model:"servo"
+},
+
+{
+ section:2,
+ title:"Releʼni ishlatish",
+ duration:"09:00",
+ theory:"Relay moduli Arduino yordamida boshqa elektr qurilmasini boshqarish uchun ishlatilishi mumkin. Tarmoq kuchlanishlari bilan ishlaganda maxsus xavfsizlik qoidalariga rioya qilish kerak.",
+ code:"int relay=7;\n\nvoid setup(){\n  pinMode(relay,OUTPUT);\n}\n\nvoid loop(){\n  digitalWrite(relay,HIGH);\n  delay(2000);\n\n  digitalWrite(relay,LOW);\n  delay(2000);\n}",
+ parts:["Arduino","Relay modul","Jumper sim"],
+ question:"Relay nima uchun ishlatiladi?",
+ answers:["Elektr yuklamasini boshqarish","Matn chiqarish","Yorug‘likni o‘lchash"],
+ correct:0,
+ model:"relay"
+}
+
+];
+
+
+let current=0;
+
+let completed =
+JSON.parse(localStorage.getItem("arduinoCompleted") || "[]");
+
+
+const title=document.getElementById("title");
+const duration=document.getElementById("duration");
+const theory=document.getElementById("theory");
+const code=document.getElementById("code");
+const parts=document.getElementById("parts");
+const question=document.getElementById("question");
+const answers=document.getElementById("answers");
+const result=document.getElementById("result");
+
+
+function buildSidebar(){
+
+  const s1=document.getElementById("section1");
+  const s2=document.getElementById("section2");
+
+  s1.innerHTML="";
+  s2.innerHTML="";
+
+  lessons.forEach((lesson,index)=>{
+
+    const button=document.createElement("button");
+
+    button.className="lessonBtn";
+
+    if(index===current)
+      button.classList.add("active");
+
+    if(completed.includes(index))
+      button.classList.add("done");
+
+    button.innerText=(index+1)+". "+lesson.title;
+
+    button.onclick=()=>{
+      current=index;
+      loadLesson();
+    };
+
+    if(lesson.section===1)
+      s1.appendChild(button);
+    else
+      s2.appendChild(button);
+
+  });
+}
+
+
+function loadLesson(){
+
+  const lesson=lessons[current];
+
+  title.innerText=lesson.title;
+  duration.innerText="⏱ "+lesson.duration;
+
+  theory.innerText=lesson.theory;
+
+  code.innerText=lesson.code;
+
+  parts.innerHTML="";
+
+  lesson.parts.forEach(part=>{
+    const li=document.createElement("li");
+    li.innerText="🔹 "+part;
+    parts.appendChild(li);
+  });
+
+
+  question.innerText=lesson.question;
+
+  answers.innerHTML="";
+  result.innerText="";
+
+
+  lesson.answers.forEach((answer,index)=>{
+
+    const btn=document.createElement("button");
+
+    btn.className="answer";
+
+    btn.innerText=answer;
+
+    btn.onclick=()=>{
+
+      if(index===lesson.correct){
+
+        result.innerText="✅ To‘g‘ri javob!";
+        result.style.color="#4ade80";
+
+      }else{
+
+        result.innerText="❌ Noto‘g‘ri javob. Yana urinib ko‘ring.";
+        result.style.color="#f87171";
+
+      }
+
+    };
+
+    answers.appendChild(btn);
+
+  });
+
+
+  buildSidebar();
+
+  updateProgress();
+
+  create3D(lesson.model);
+
+}
+
+
+function completeLesson(){
+
+  if(!completed.includes(current)){
+
+    completed.push(current);
+
+    localStorage.setItem(
+      "arduinoCompleted",
+      JSON.stringify(completed)
+    );
+
+  }
+
+  updateProgress();
+
+  buildSidebar();
+
+}
+
+
+function updateProgress(){
+
+  let percent=
+  Math.round((completed.length / lessons.length)*100);
+
+  document.getElementById("progressText")
+  .innerText=percent+"%";
+
+  document.getElementById("progressBar")
+  .style.width=percent+"%";
+
+}
+
+
+function nextLesson(){
+
+  if(current < lessons.length-1){
+
+    current++;
+
+    loadLesson();
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }
+
+}
+
+
+function previousLesson(){
+
+  if(current > 0){
+
+    current--;
+
+    loadLesson();
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }
+
+}
+
+
+function copyCode(){
+
+  navigator.clipboard.writeText(
+    lessons[current].code
+  );
+
+  alert("✅ Kod nusxalandi!");
+
+}
+
+
+/* ==========================
+   3D MODEL
+========================== */
+
+let scene;
+let camera;
+let renderer;
+let object;
+
+
+function create3D(type){
+
+  const container=
+  document.getElementById("threeContainer");
+
+  container.innerHTML="";
+
+
+  scene=new THREE.Scene();
+
+  scene.background=
+  new THREE.Color(0x020617);
+
+
+  camera=new THREE.PerspectiveCamera(
+    45,
+    container.clientWidth/container.clientHeight,
+    0.1,
+    1000
+  );
+
+  camera.position.set(0,2,6);
+
+
+  renderer=new THREE.WebGLRenderer({
+    antialias:true
+  });
+
+  renderer.setSize(
+    container.clientWidth,
+    container.clientHeight
+  );
+
+  container.appendChild(renderer.domElement);
+
+
+  const light=
+  new THREE.DirectionalLight(
+    0xffffff,
+    2
+  );
+
+  light.position.set(3,5,5);
+
+  scene.add(light);
+
+
+  scene.add(
+    new THREE.AmbientLight(
+      0xffffff,
+      0.5
+    )
+  );
+
+
+  object=createObject(type);
+
+  scene.add(object);
+
+
+  animate();
+
+}
+
+
+function createObject(type){
+
+  const group=new THREE.Group();
+
+
+  if(type==="arduino" || type==="board"){
+
+    const board=
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        4,
+        0.15,
+        2.5
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x126e51
+      })
+
+    );
+
+    group.add(board);
+
+
+    for(let i=0;i<14;i++){
+
+      const pin=
+      new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+          0.08,
+          0.35,
+          0.08
+        ),
+
+        new THREE.MeshStandardMaterial({
+          color:0xcccccc
+        })
+
+      );
+
+      pin.position.x=-1.6+i*0.25;
+      pin.position.y=0.25;
+      pin.position.z=1.25;
+
+      group.add(pin);
+
+    }
+
+  }
+
+
+  else if(type==="led"){
+
+    const base=
+    new THREE.Mesh(
+
+      new THREE.CylinderGeometry(
+        0.55,
+        0.55,
+        0.25,
+        32
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x222222
+      })
+
+    );
+
+    group.add(base);
+
+
+    const led=
+    new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        0.55,
+        32,
+        32
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0xff2222,
+        emissive:0x330000
+      })
+
+    );
+
+    led.position.y=0.55;
+
+    group.add(led);
+
+  }
+
+
+  else if(type==="traffic"){
+
+    for(let i=0;i<3;i++){
+
+      const light=
+      new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+          0.55,
+          32,
+          32
+        ),
+
+        new THREE.MeshStandardMaterial({
+          color:
+            i===0?0xff0000:
+            i===1?0xffff00:
+            0x00ff00
+        })
+
+      );
+
+      light.position.y=i*1.3-1.3;
+
+      group.add(light);
+
+    }
+
+  }
+
+
+  else if(type==="segment"){
+
+    for(let i=0;i<7;i++){
+
+      const segment=
+      new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+          0.18,
+          0.7,
+          0.1
+        ),
+
+        new THREE.MeshStandardMaterial({
+          color:0xff2222,
+          emissive:0x330000
+        })
+
+      );
+
+      const angle=
+      (Math.PI*2/7)*i;
+
+      segment.position.x=
+      Math.cos(angle)*0.45;
+
+      segment.position.y=
+      Math.sin(angle)*0.45;
+
+      segment.rotation.z=
+      angle;
+
+      group.add(segment);
+
+    }
+
+  }
+
+
+  else if(type==="servo"){
+
+    const body=
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        1.4,
+        1.4,
+        0.8
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x1565c0
+      })
+
+    );
+
+    group.add(body);
+
+
+    const arm=
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        0.15,
+        1.8,
+        0.15
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0xffffff
+      })
+
+    );
+
+    arm.position.y=1.2;
+
+    group.add(arm);
+
+  }
+
+
+  else if(type==="rgb"){
+
+    const sphere=
+    new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        0.8,
+        32,
+        32
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x6633ff,
+        emissive:0x220044
+      })
+
+    );
+
+    group.add(sphere);
+
+  }
+
+
+  else if(type==="lcd"){
+
+    const screen=
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        3.5,
+        1.5,
+        0.3
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x064e3b
+      })
+
+    );
+
+    group.add(screen);
+
+  }
+
+
+  else if(type==="buzzer"){
+
+    const buzzer=
+    new THREE.Mesh(
+
+      new THREE.CylinderGeometry(
+        0.8,
+        0.8,
+        0.5,
+        32
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x111111
+      })
+
+    );
+
+    group.add(buzzer);
+
+  }
+
+
+  else{
+
+    const cube=
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        1.5,
+        1.5,
+        1.5
+      ),
+
+      new THREE.MeshStandardMaterial({
+        color:0x2563eb
+      })
+
+    );
+
+    group.add(cube);
+
+  }
+
+
+  return group;
+
+}
+
+
+function animate(){
+
+  requestAnimationFrame(animate);
+
+  if(object){
+
+    object.rotation.y+=0.008;
+
+    object.rotation.x=
+    Math.sin(Date.now()*0.001)*0.05;
+
+  }
+
+  renderer.render(scene,camera);
+
+}
+
+
+window.addEventListener("resize",()=>{
+
+  const container=
+  document.getElementById("threeContainer");
+
+  if(camera && renderer){
+
+    camera.aspect=
+    container.clientWidth/
+    container.clientHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      container.clientWidth,
+      container.clientHeight
+    );
+
+  }
+
+});
+
+
+loadLesson();
+
+</script>
+
+</body>
+</html>
